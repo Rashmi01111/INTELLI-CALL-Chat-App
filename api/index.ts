@@ -18,14 +18,14 @@ import { Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
 
 // Modular chat features imports
-import { initializeSocketIO } from './server/socket/index.js';
-import ChatController from './server/controllers/chatController.js';
-import createChatRoutes from './server/routes/chatRoutes.js';
-import summaryRoutes from './server/routes/summaryRoutes.js';
-import createVideoRoutes from './server/routes/videoRoutes.js';
-import aiRoutes from './server/routes/aiRoutes.js';
-import reelAIService from './server/services/reelAIService.js';
-import aiService from './server/services/aiService.js';
+import { initializeSocketIO } from '../server/socket/index.js';
+import ChatController from '../server/controllers/chatController.js';
+import createChatRoutes from '../server/routes/chatRoutes.js';
+import summaryRoutes from '../server/routes/summaryRoutes.js';
+import createVideoRoutes from '../server/routes/videoRoutes.js';
+import aiRoutes from '../server/routes/aiRoutes.js';
+import reelAIService from '../server/services/reelAIService.js';
+import aiService from '../server/services/aiService.js';
 
 /** Primary AI: Google Gemini - set GEMINI_API_KEY in .env (recommended: gemini-2.0-flash or gemini-1.5-flash) */
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
