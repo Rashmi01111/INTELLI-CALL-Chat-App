@@ -1,0 +1,8 @@
+{
+  "name": "Intelli-call",
+  "description": "A private and secure real-time chat application with advanced group management, AI-powered features, and secure communication.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

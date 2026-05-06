@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Translation Test</title>
+</head>
+<body>
+    <h1>Translation Test</h1>
+    <button onclick="testTranslation()">Test Translation</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testTranslation() {
+            console.log('🧪 Testing browser translation...');
+            
+            try {
+                const response = await fetch("/api/ai/translate", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: 'kya kar rahi ho',
+                        targetLanguage: 'en',
+                        sourceLanguage: 'hi'
+                    })
+                });
+                
+                console.log('📥 Response status:', response.status);
+                const data = await response.json();
+                console.log('📄 Response data:', data);
+                
+                document.getElementById('result').innerHTML = 
+                    '<h3>Result:</h3>' +
+                    '<p>Status: ' + response.status + '</p>' +
+                    '<p>Success: ' + data.success + '</p>' +
+                    '<p>Translation: ' + data.text + '</p>' +
+                    '<p>Original: kya kar rahi ho</p>';
+                    
+            } catch (error) {
+                console.error('❌ Error:', error);
+                document.getElementById('result').innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>
