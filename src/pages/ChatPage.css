@@ -1,0 +1,37 @@
+/* ChatPage Custom Styles */
+.chat-page-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.chat-sidebar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+.chat-main-area {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Ensure proper loading */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Mobile responsive fixes */
+@media (max-width: 768px) {
+  .chat-sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+}
