@@ -1,0 +1,133 @@
+/**
+ * Socket.IO Index - Main socket initialization and setup
+ * Combines all socket handlers with the modular architecture
+ */
+
+import ChatSocketHandler from './chatSocket.js';
+import CallSocketHandler from './callSocket.js';
+import ReelSocketHandler from './reelSocket.js';
+import PresenceManager from '../utils/presenceManager.js';
+import TypingManager from '../utils/typingManager.js';
+import NotificationManager from '../utils/notificationManager.js';
+
+/**
+ * Initialize Socket.IO with all modular handlers
+ */
+export const initializeSocketIO = (io, models) => {
+  console.log('🔌 Initializing Socket.IO with modular handlers...');
+
+  // Initialize utility managers
+  const presenceManager = new PresenceManager(io);
+  const typingManager = new TypingManager(io, presenceManager);
+  const notificationManager = new NotificationManager(io, presenceManager);
+
+  // Initialize socket handlers
+  const chatHandler = new ChatSocketHandler(io, presenceManager, typingManager, notificationManager);
+  const callHandler = new CallSocketHandler(io, presenceManager);
+  const reelHandler = new ReelSocketHandler(io, presenceManager);
+
+  // Main connection handler
+  io.on('connection', (socket) => {
+    console.log(`🔌 New socket connection: ${socket.id}`);
+
+    // Initialize all handlers for this socket
+    chatHandler.initialize(socket, models);
+    callHandler.initialize(socket, models);
+    reelHandler.initialize(socket, models);
+
+    // Handle socket errors
+    socket.on('error', (error) => {
+      console.error(`Socket ${socket.id} error:`, error);
+    });
+  });
+
+  // Expose managers for external access (API routes, etc.)
+  io.presenceManager = presenceManager;
+  io.typingManager = typingManager;
+  io.notificationManager = notificationManager;
+
+  console.log('✅ Socket.IO initialized with:');
+  console.log(`   - Presence Manager`);
+  console.log(`   - Typing Manager`);
+  console.log(`   - Notification Manager`);
+  console.log(`   - Chat Handler`);
+  console.log(`   - Call Handler`);
+  console.log(`   - Reel Handler`);
+
+  return {
+    io,
+    presenceManager,
+    typingManager,
+    notificationManager
+  };
+};
+
+export default initializeSocketIO;
+          groupsCount: groups.length
+        });
+
+      } catch (error) {
+        console.error('Share reel error:', error);
+        socket.emit('reel_share_error', { message: 'Failed to share reel' });
+      }
+    });
+
+    // Forward message
+    socket.on('forward_message', async (data) => {
+      try {
+        const { originalMessage, from, fromId, selectedUsers, selectedGroups } = data;
+
+        const forwardedMessage = {
+          id: `fwd_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+          user: from,
+          senderId: fromId,
+          text: originalMessage.text,
+          image: originalMessage.image,
+          video: originalMessage.video,
+          audio: originalMessage.audio,
+          timestamp: new Date().toISOString(),
+          isForwarded: true,
+          forwardedFrom: originalMessage.user,
+          originalMessageId: originalMessage.id,
+          reelId: originalMessage.reelId,
+          reelData: originalMessage.reelData
+        };
+
+        // Forward to users
+        for (const userId of selectedUsers) {
+          const userMessage = { ...forwardedMessage, to: userId };
+          this.io.to(userId).emit('message_received', userMessage);
+          this.io.to(userId).emit('receive_message', userMessage);
+        }
+
+        // Forward to groups
+        for (const groupId of selectedGroups) {
+          const groupMessage = { ...forwardedMessage, groupId };
+          this.io.to(groupId).emit('message_received', groupMessage);
+          this.io.to(groupId).emit('receive_message', groupMessage);
+        }
+
+        socket.emit('message_forwarded_confirmation', {
+          originalMessageId: originalMessage.id,
+          usersCount: selectedUsers.length,
+          groupsCount: selectedGroups.length
+        });
+
+      } catch (error) {
+        console.error('Forward message error:', error);
+        socket.emit('message_forward_error', { message: 'Failed to forward message' });
+      }
+    });
+
+    // Reel interactions
+    socket.on('reel_like', (data) => {
+      socket.broadcast.emit('reel_like_updated', data);
+    });
+
+    socket.on('reel_comment', (data) => {
+      socket.broadcast.emit('reel_comment_added', data);
+    });
+  }
+}
+
+export default initializeSocketIO;
